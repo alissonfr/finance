@@ -1,12 +1,19 @@
-import { Controller, Get } from '@nestjs/common';
-import { AppService } from './app.service';
+import { Controller, Get, Post, Body } from '@nestjs/common';
+import { PrismaService } from './database/prisma.service';
+import { randomUUID } from 'node:crypto';
+import { CreateUserBody } from './dtos/create-user-body';
+import { UserRespository } from './repositories/user-repository';
 
-@Controller()
+@Controller('user')
 export class AppController {
-  constructor(private readonly appService: AppService) {}
+  constructor(private userRepository: UserRespository) {}
 
-  @Get()
-  getHello(): string {
-    return this.appService.getHello();
+  @Post()
+  async createUser(@Body() body: CreateUserBody) {
+    const { name, cel } = body;
+
+    const user = await this.userRepository.create(name, cel);
+
+    return user;
   }
 }
